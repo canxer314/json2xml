@@ -1,0 +1,5 @@
+desc:
+    将json转为citymaker特定格式的xml的nodejs小工具
+
+usage:
+    node cc "json文件名"

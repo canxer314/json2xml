@@ -8,23 +8,32 @@ function isObject(val) {
   return val != null && typeof val === 'object' && Array.isArray(val) === false;
 };
 
-function go (obj) {
-    let xml = ''
-    // console.log(obj)
-    // console.log('\n----------------\n')
+function isNoChild(obj) {
+    var ret = true
     const keys = Object.keys(obj)
     keys.forEach(x => {
-        // console.log("keys", x);
-        // xml = xml + '<' + x
+        if (Array.isArray(obj[x]) || isObject(obj[x])) {
+            ret = false
+        }
+    })
+    return ret
+}
+
+function go (obj) {
+    let xml = ''
+    const keys = Object.keys(obj)
+    keys.forEach(x => {
         if (isObject(obj[x])) {
             xml = xml + '<' + x
-            const tmp = go(obj[x])
-            if (isObject(obj[x])) {
-                xml = xml + tmp + '</' + x + '>'
-            } else {
+            let tmp = go(obj[x])
+            if (isNoChild(obj[x])) {
+                if (tmp.charAt(tmp.length - 1) == '>') {
+                    tmp = tmp.substring(0, tmp.length - 1)
+                }
                 xml = xml + tmp + '/>'
+            } else {
+                xml = xml + tmp + '</' + x + '>'
             }
-            // xml = xml + go(obj[x]) + '</' + x + '>'
         } else if (Array.isArray(obj[x])) {
             xml = xml + '>'
             obj[x].forEach(y => {
@@ -41,9 +50,6 @@ function go (obj) {
     })
     return xml
 }
-
-
-
 
 var data = {
     "FeatureLayer": {
